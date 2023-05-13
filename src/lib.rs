@@ -142,7 +142,7 @@ pub fn print_hangman(tries: usize) {
                 |_____
             "};
         }
-        _ => println!("Shouldn't ever go here")
+        _ => println!("Shouldn't ever get here")
     }
     println!("{}", hangman)
 }

@@ -1,8 +1,5 @@
-// #![deny(warnings)]
-
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-
     const WORD_LENGTH: usize = 8;
     let mut tries = 10;
 
@@ -19,28 +16,30 @@ async fn main() -> Result<(), reqwest::Error> {
 
     let mut incorrect_guesses = vec![]; // place the incorrect letters a user guesses can go
     
-    let mut print_statement = "Welcome to hangman!";
     // loop here
+    let mut print_statement = "Welcome to hangman!";
     loop {
         clearscreen::clear().expect("failed to clear the screen");
+        
+        // println!("Word is: {}", word);
         println!("{}", display_array.join(" "));
         println!("{}", print_statement);
         println!("Incorrect guesses left: {tries}");
-        // println!("Word is: {}", word);
-        println!("Here are your incorrect guesses: {:?}", incorrect_guesses);
-        println!("Make your guess: ");
+        println!("Prior guesses: {:?}", incorrect_guesses);
         rust_hangman::print_hangman(tries);
+
+        println!("Make your guess: ");
         let mut guess = String::new();
         std::io::stdin().read_line(&mut guess).unwrap();
 
-        // Clean guess
+        // Clean and validate guess
         let guess = guess.replace("\n", "");        
         if guess.len() > 1 || guess.len() == 0 || !guess.chars().all(char::is_alphabetic) {
             print_statement = "Your guess must be a single letter.";
             continue;
         }
 
-        // See if we guessed that letter already
+        // See if that letter was guessed already
         if display_array.contains(&guess) || incorrect_guesses.contains(&guess) {
             print_statement = "You already guessed that letter, try again.";
             continue;
@@ -64,6 +63,7 @@ async fn main() -> Result<(), reqwest::Error> {
             continue;
         }
 
+        // If not correct, then we push and move tries down one
         incorrect_guesses.push(guess);
         print_statement = "Incorrect :(";
         // Lose condition
