@@ -9,7 +9,7 @@ pub async fn make_word_request(word_length: usize) -> Result<String, reqwest::Er
         let body = res.text().await?;
         
         let word = String::from(body).replace(&['[', ']', '"'][..], "");
-        if word.chars().all(char::is_alphabetic) { // sometimes 
+        if word.chars().all(char::is_alphabetic) { // sometimes the API returns a word with a - or ' in it, if it does we just ask for another word
             return Ok(word)
         }
     }
