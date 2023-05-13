@@ -71,6 +71,7 @@ async fn main() -> Result<(), reqwest::Error> {
         if tries == 0  {
             clearscreen::clear().expect("This should work");
             println!("{}", display_array.join(" "));
+            println!("Prior guesses: {:?}", incorrect_guesses);
             rust_hangman::print_hangman(tries);
             println!("You lost! The word was '{}'. Feel free to try again!", word);
             break;
