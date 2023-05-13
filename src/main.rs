@@ -3,8 +3,8 @@
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
 
-    const WORD_LENGTH: usize = 5;
-    let mut tries = 7;
+    const WORD_LENGTH: usize = 8;
+    let mut tries = 10;
 
     let word = rust_hangman::make_word_request(WORD_LENGTH).await?;
     
@@ -26,9 +26,10 @@ async fn main() -> Result<(), reqwest::Error> {
         println!("{}", display_array.join(" "));
         println!("{}", print_statement);
         println!("Incorrect guesses left: {tries}");
-        println!("Word is: {}", word);
+        // println!("Word is: {}", word);
         println!("Here are your incorrect guesses: {:?}", incorrect_guesses);
         println!("Make your guess: ");
+        rust_hangman::print_hangman(tries);
         let mut guess = String::new();
         std::io::stdin().read_line(&mut guess).unwrap();
 
@@ -68,7 +69,10 @@ async fn main() -> Result<(), reqwest::Error> {
         // Lose condition
         tries = tries - 1;
         if tries == 0  {
-            println!("You lost! Feel free to try again!");
+            clearscreen::clear().expect("This should work");
+            println!("{}", display_array.join(" "));
+            rust_hangman::print_hangman(tries);
+            println!("You lost! The word was '{}'. Feel free to try again!", word);
             break;
         }
     }
