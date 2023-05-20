@@ -1,18 +1,13 @@
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-    const WORD_LENGTH: usize = 8;
+    let word_length: usize = 8; // Can ask user for word length as a difficulty slider
     let mut tries = 10;
 
-    let word = rust_hangman::make_word_request(WORD_LENGTH).await?;
+    let word = rust_hangman::make_word_request(word_length).await?;
     
     // so now we have our word
     // next would be making x spaces depending on length of word
-    // Array shenanigans
-    const EMPTY_STRING: String = String::new();
-    let mut display_array = [EMPTY_STRING; WORD_LENGTH]; 
-    for i in 0..WORD_LENGTH {
-        display_array[i] = String::from("_");
-    }
+    let mut display_vector = vec!["_".to_string(); word_length];
 
     let mut incorrect_guesses = vec![]; // place the incorrect letters a user guesses can go
     
@@ -22,7 +17,7 @@ async fn main() -> Result<(), reqwest::Error> {
         clearscreen::clear().expect("failed to clear the screen");
         
         // println!("Word is: {}", word);
-        println!("{}", display_array.join(" "));
+        println!("{}", display_vector.join(" "));
         println!("{}", print_statement);
         println!("Incorrect guesses left: {tries}");
         println!("Prior guesses: {:?}", incorrect_guesses);
@@ -40,7 +35,7 @@ async fn main() -> Result<(), reqwest::Error> {
         }
 
         // See if that letter was guessed already
-        if display_array.contains(&guess) || incorrect_guesses.contains(&guess) {
+        if display_vector.contains(&guess) || incorrect_guesses.contains(&guess) {
             print_statement = "You already guessed that letter, try again.";
             continue;
         }
@@ -49,14 +44,14 @@ async fn main() -> Result<(), reqwest::Error> {
         if word.contains(&guess) {
             for (i, char) in word.chars().enumerate() {
                 if &char.to_string() == &guess {
-                    display_array[i] = guess.clone();
+                    display_vector[i] = guess.clone();
                 }
             }
             print_statement = "You got it!";
             
-            if !display_array.contains(&String::from("_")) {
+            if !display_vector.contains(&String::from("_")) {
                 clearscreen::clear().expect("failed to clear the screen");
-                println!("{}", display_array.join(" "));
+                println!("{}", display_vector.join(" "));
                 println!("Congratulations!! You won the game!");
                 break;
             }
@@ -70,7 +65,7 @@ async fn main() -> Result<(), reqwest::Error> {
         tries = tries - 1;
         if tries == 0  {
             clearscreen::clear().expect("This should work");
-            println!("{}", display_array.join(" "));
+            println!("{}", display_vector.join(" "));
             println!("Prior guesses: {:?}", incorrect_guesses);
             rust_hangman::print_hangman(tries);
             println!("You lost! The word was '{}'. Feel free to try again!", word);
