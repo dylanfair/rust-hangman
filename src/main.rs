@@ -1,6 +1,7 @@
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-    let word_length: usize = 8; // Can ask user for word length as a difficulty slider
+    println!("Please choose how many letters you'd like your word to have (between 6-10):");
+    let word_length = rust_hangman::determine_word_length();
     let mut tries = 10;
 
     let word = rust_hangman::make_word_request(word_length).await?;

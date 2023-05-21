@@ -1,5 +1,30 @@
 use indoc::indoc;
 
+pub fn determine_word_length() -> usize {
+    loop {
+        let mut number_input = String::new();
+        std::io::stdin().read_line(&mut number_input).unwrap();
+
+        match number_input.replace("\n", "").parse::<usize>() {
+            Ok(n) => {
+                if n > 10 {
+                    println!("Please choose a number less than or equal to 10");
+                    continue
+                }
+                if n < 6 {
+                    println!("Please choose a number greater or equal to than 6");
+                    continue
+                }
+                return n
+            }
+            Err(e) => {
+                println!("{}", e);
+                continue
+            }
+        }
+    }
+}
+
 /// Makes an API call to get a random word
 pub async fn make_word_request(word_length: usize) -> Result<String, reqwest::Error> {
     loop {
@@ -10,7 +35,7 @@ pub async fn make_word_request(word_length: usize) -> Result<String, reqwest::Er
         
         let word = String::from(body).replace(&['[', ']', '"'][..], "");
         if word.chars().all(char::is_alphabetic) { // sometimes the API returns a word with a - or ' in it, if it does we just ask for another word
-            return Ok(word)
+            return Ok(word.to_lowercase())
         }
     }
     
